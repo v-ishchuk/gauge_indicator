@@ -119,6 +119,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     _axisDefinition =
         RadialGaugeAxisDefinition.calculate(_computedLayout, axis);
 
+    final child = this.child;
     if (child != null) {
       final innerCircleRadius =
           (_computedLayout.radius - axis.style.thickness) / 2 * math.sqrt2;
@@ -126,14 +127,16 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
         center: _computedLayout.circleRect.center,
         radius: innerCircleRadius,
       );
-      final childRect = circleRect.intersect(_computedLayout.targetRect);
 
-      child!.layout(BoxConstraints.tight(childRect.size));
+      child.layout(
+        BoxConstraints.tightFor(width: circleRect.width),
+        parentUsesSize: true,
+      );
 
-      final childParentData = child!.parentData! as BoxParentData;
+      final childParentData = child.parentData! as BoxParentData;
       childParentData.offset = Offset(
-        childRect.left - _computedLayout.sourceRect.left,
-        childRect.top - _computedLayout.sourceRect.top,
+        circleRect.left - _computedLayout.sourceRect.left,
+        circleRect.top - _computedLayout.sourceRect.top,
       );
     }
   }
