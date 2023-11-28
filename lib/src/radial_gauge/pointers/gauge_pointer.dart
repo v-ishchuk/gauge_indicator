@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import 'needle_pointer.dart';
 import 'circle_pointer.dart';
+import 'trapeze_pointer.dart';
 import 'triangle_pointer.dart';
 
 /// Describes the position (anchor) of the gauge pointer.
@@ -78,6 +79,8 @@ abstract class GaugePointer {
   Size get size;
   GaugePointerPosition get position;
 
+  double get value;
+
   /// Either color or gradient must be provided.
   Color? get color;
   Gradient? get gradient;
@@ -93,6 +96,7 @@ abstract class GaugePointer {
     required double width,
     required double height,
     required Color color,
+    double pointerValue,
     GaugePointerPosition position,
     GaugePointerBorder? border,
     double? borderRadius,
@@ -103,6 +107,7 @@ abstract class GaugePointer {
   /// Draws a circle pointer.
   const factory GaugePointer.circle({
     required double radius,
+    double pointerValue,
     Color? color,
     GaugePointerPosition position,
     GaugePointerBorder? border,
@@ -114,6 +119,7 @@ abstract class GaugePointer {
   const factory GaugePointer.triangle({
     required double width,
     required double height,
+    double pointerValue,
     Color? color,
     GaugePointerPosition position,
     GaugePointerBorder? border,
@@ -121,4 +127,17 @@ abstract class GaugePointer {
     Gradient? gradient,
     Shadow? shadow,
   }) = TrianglePointer;
+
+  /// Draws a trapeze pointer.
+  const factory GaugePointer.trapeze({
+    required double width,
+    required double height,
+    double pointerValue,
+    Color? color,
+    GaugePointerPosition position,
+    GaugePointerBorder? border,
+    double borderRadius,
+    Gradient? gradient,
+    Shadow? shadow,
+  }) = TrapezePointer;
 }

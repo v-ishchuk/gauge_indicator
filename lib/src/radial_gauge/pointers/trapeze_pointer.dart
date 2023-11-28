@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
 
-class TrianglePointer extends Equatable implements GaugePointer {
+class TrapezePointer extends Equatable implements GaugePointer {
   final double width;
   final double height;
   final double pointerValue;
@@ -12,9 +12,14 @@ class TrianglePointer extends Equatable implements GaugePointer {
 
   @override
   Path get path => roundedPoly([
-        VertexDefinition(0, height), // bottom left
-        VertexDefinition(width, height), // bottom right
-        VertexDefinition(width / 2, 0), // top center
+        // bottom left
+        VertexDefinition(width / 4, height, radius: width / 2),
+        // bottom right
+        VertexDefinition(width * 3 / 4, height, radius: width / 2),
+        // top left
+        VertexDefinition(width, 0, radius: width),
+        // top right
+        VertexDefinition(0, 0, radius: width),
       ], borderRadius);
 
   @override
@@ -29,7 +34,7 @@ class TrianglePointer extends Equatable implements GaugePointer {
   @override
   final Shadow? shadow;
 
-  const TrianglePointer({
+  const TrapezePointer({
     required this.width,
     required this.height,
     this.pointerValue = 0,

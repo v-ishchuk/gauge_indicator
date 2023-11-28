@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 class CirclePointer extends Equatable implements GaugePointer {
   final double radius;
+  final double pointerValue;
 
   @override
   final GaugePointerPosition position;
@@ -18,6 +19,7 @@ class CirclePointer extends Equatable implements GaugePointer {
 
   @override
   Size get size => Size.fromRadius(radius);
+
   @override
   Path get path => Path()
     ..addOval(Rect.fromCircle(
@@ -27,6 +29,7 @@ class CirclePointer extends Equatable implements GaugePointer {
 
   const CirclePointer({
     required this.radius,
+    this.pointerValue = 0,
     this.color,
     this.position = const GaugePointerPosition.surface(),
     this.border,
@@ -39,5 +42,16 @@ class CirclePointer extends Equatable implements GaugePointer {
         );
 
   @override
-  List<Object?> get props => [size, color, border, position, gradient, shadow];
+  double get value => pointerValue;
+
+  @override
+  List<Object?> get props => [
+        size,
+        color,
+        border,
+        position,
+        gradient,
+        shadow,
+        pointerValue,
+      ];
 }

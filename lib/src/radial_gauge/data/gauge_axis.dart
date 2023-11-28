@@ -57,7 +57,14 @@ class GaugeAxis extends Equatable {
   ///
   /// Defaults to [defaultPointer].
   /// ```
-  final GaugePointer? pointer;
+  final GaugePointer? currentValuePointer;
+
+  /// If specified, the defined indicators will be used to display
+  /// the provided values of the gauge
+  ///
+  /// Defaults to [].
+  /// ```
+  final List<GaugePointer>? pointers;
 
   /// The minimum value the gauge can display.
   ///
@@ -68,6 +75,11 @@ class GaugeAxis extends Equatable {
   ///
   /// Defaults to 1.0. Must be greater than [min].
   final double max;
+
+  /// The zero value the gauge can display.
+  ///
+  /// Defaults to 0.0. Must be greater or equal to [min].
+  final double zero;
 
   /// Determines the degree of arc of the gauge axis.
   ///
@@ -112,10 +124,12 @@ class GaugeAxis extends Equatable {
   const GaugeAxis({
     this.min = 0.0,
     this.max = 1.0,
+    this.zero = 0.0,
     this.transformer = const GaugeAxisTransformer.noTransform(),
     this.segments = const [],
     this.degrees = 180,
-    this.pointer = defaultPointer,
+    this.currentValuePointer = defaultPointer,
+    this.pointers = const [],
     this.progressBar = defaultProgressBar,
     this.style = const GaugeAxisStyle(),
   }) : assert(
@@ -134,20 +148,24 @@ class GaugeAxis extends Equatable {
   GaugeAxis copyWith({
     final GaugeAxisStyle? style,
     final List<GaugeSegment>? segments,
-    final GaugePointer? pointer,
+    final GaugePointer? currentValuePointer,
+    final List<GaugePointer>? pointers,
     final GaugeProgressBar? progressBar,
     final GaugeAxisTransformer? transformer,
     final double? degrees,
     final double? min,
     final double? max,
+    final double? zero,
   }) =>
       GaugeAxis(
         min: min ?? this.min,
         max: max ?? this.max,
+        zero: zero ?? this.zero,
         degrees: degrees ?? this.degrees,
         segments: segments ?? this.segments,
         style: style ?? this.style,
-        pointer: pointer ?? this.pointer,
+        currentValuePointer: currentValuePointer ?? this.currentValuePointer,
+        pointers: pointers ?? this.pointers,
         transformer: transformer ?? this.transformer,
         progressBar: progressBar ?? this.progressBar,
       );
@@ -160,7 +178,14 @@ class GaugeAxis extends Equatable {
       );
 
   @override
-  List<Object?> get props => [pointer, style, segments, degrees, progressBar];
+  List<Object?> get props => [
+        currentValuePointer,
+        pointers,
+        style,
+        segments,
+        degrees,
+        progressBar,
+      ];
 
   static GaugeAxis? lerp(GaugeAxis? begin, GaugeAxis? end, double t) {
     if (begin == null && end == null) {
@@ -196,7 +221,7 @@ class GaugeAxis extends Equatable {
       return end.copyWith(
         degrees: lerpDouble(begin.degrees, end.degrees, t).clamp(10.0, 360.0),
         style: GaugeAxisStyle.lerp(begin.style, end.style, t),
-        pointer: end.pointer,
+        currentValuePointer: end.currentValuePointer,
         progressBar: end.progressBar,
         transformer: end.transformer,
         segments: transformedSegments,

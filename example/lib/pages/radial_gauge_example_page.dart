@@ -56,7 +56,7 @@ class _RadialGaugeExamplePageState extends State<RadialGaugeExamplePage> {
                   min: 0,
                   max: 100,
                   degrees: _controller.degree,
-                  pointer: _controller.hasPointer
+                  currentValuePointer: _controller.hasPointer
                       ? _controller.getPointer(_controller.pointerType)
                       : null,
                   progressBar: _controller.hasProgressBar

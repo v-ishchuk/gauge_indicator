@@ -5,6 +5,7 @@ import 'package:gauge_indicator/gauge_indicator.dart';
 class NeedlePointer extends Equatable implements GaugePointer {
   final double width;
   final double height;
+  final double pointerValue;
 
   @override
   final GaugePointerPosition position;
@@ -20,6 +21,7 @@ class NeedlePointer extends Equatable implements GaugePointer {
 
   @override
   Size get size => Size(width, height);
+
   @override
   Path get path => roundedPoly([
         VertexDefinition(0, height), // bottom left
@@ -30,6 +32,7 @@ class NeedlePointer extends Equatable implements GaugePointer {
   const NeedlePointer({
     required this.width,
     required this.height,
+    this.pointerValue = 0,
     this.color,
     this.position = const GaugePointerPosition.center(),
     this.border,
@@ -43,5 +46,15 @@ class NeedlePointer extends Equatable implements GaugePointer {
             'Either color or gradient must be provided.');
 
   @override
-  List<Object?> get props => [size, color, border, position, borderRadius];
+  List<Object?> get props => [
+        size,
+        color,
+        border,
+        position,
+        borderRadius,
+        pointerValue,
+      ];
+
+  @override
+  double get value => pointerValue;
 }

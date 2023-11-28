@@ -18,7 +18,9 @@ import '../internal/radial_gauge_size_ratios.dart';
 class RadialGaugeRenderBox extends RenderShiftedBox {
   /// Current value of the radial gauge
   double _value;
+
   double get value => _value;
+
   set value(double value) {
     if (_value != value) {
       _value = value;
@@ -30,6 +32,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   /// Only a single axis is supported
   GaugeAxis get axis => _axis;
   GaugeAxis _axis;
+
   set axis(GaugeAxis axis) {
     if (_axis != axis) {
       if (_axis.degrees != axis.degrees ||
@@ -44,7 +47,9 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   }
 
   Alignment _alignment;
+
   Alignment get alignment => _alignment;
+
   set alignment(Alignment alignment) {
     if (_alignment != alignment) {
       _alignment = alignment;
@@ -53,7 +58,9 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   }
 
   double? _radius;
+
   double? get radius => _radius;
+
   set radius(double? radius) {
     if (_radius != radius) {
       _radius = radius;
@@ -62,7 +69,9 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   }
 
   bool _debug;
+
   bool get debug => _debug;
+
   set debug(bool debug) {
     if (_debug != debug) {
       _debug = debug;
@@ -91,7 +100,9 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   @override
   bool get sizedByParent => false;
 
-  double get _valueProgress => (value - axis.min) / (axis.max - axis.min);
+  double get _valueProgress => _normalize(value);
+
+  double get _from => _normalize(axis.zero);
 
   @override
   void performLayout() {
@@ -108,6 +119,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     _axisDefinition =
         RadialGaugeAxisDefinition.calculate(_computedLayout, axis);
 
+    final child = this.child;
     if (child != null) {
       final innerCircleRadius =
           (_computedLayout.radius - axis.style.thickness) / 2 * math.sqrt2;
@@ -115,14 +127,16 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
         center: _computedLayout.circleRect.center,
         radius: innerCircleRadius,
       );
-      final childRect = circleRect.intersect(_computedLayout.targetRect);
 
-      child!.layout(BoxConstraints.tight(childRect.size));
+      child.layout(
+        BoxConstraints.tightFor(width: circleRect.width),
+        parentUsesSize: true,
+      );
 
-      final childParentData = child!.parentData! as BoxParentData;
+      final childParentData = child.parentData! as BoxParentData;
       childParentData.offset = Offset(
-        childRect.left - _computedLayout.sourceRect.left,
-        childRect.top - _computedLayout.sourceRect.top,
+        circleRect.left - _computedLayout.sourceRect.left,
+        circleRect.top - _computedLayout.sourceRect.top,
       );
     }
   }
@@ -220,7 +234,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
 
     if (progressBar != null &&
         progressBar.placement == GaugeProgressPlacement.inside) {
-      progressBar.paint(axis, layout, canvas, _valueProgress);
+      progressBar.paint(axis, layout, canvas, _from, _valueProgress);
     }
 
     for (var i = 0; i < axisDefinition.segments.length; i++) {
@@ -237,21 +251,29 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
 
     if (progressBar != null &&
         progressBar.placement == GaugeProgressPlacement.over) {
-      progressBar.paint(axis, layout, canvas, _valueProgress);
+      progressBar.paint(axis, layout, canvas, _from, _valueProgress);
     }
 
     canvas.restore();
 
-    /// Draw a pointer
+    /// Draw pointers
 
-    final pointer = axis.pointer;
-    if (pointer != null) {
-      drawPointer(canvas, axisDefinition, pointer);
+    final currentValuePointer = axis.currentValuePointer;
+    if (currentValuePointer != null) {
+      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
+    }
+
+    final pointers = axis.pointers;
+    if (pointers != null && pointers.isNotEmpty) {
+      for (final pointer in pointers) {
+        drawPointer(canvas, _normalize(pointer.value), axisDefinition, pointer);
+      }
     }
   }
 
   void drawPointer(
     Canvas canvas,
+    double value,
     RadialGaugeAxisDefinition axisDefinition,
     GaugePointer pointer,
   ) {
@@ -275,7 +297,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       originDY,
     );
 
-    final rotation = _valueProgress * degrees - degrees / 2;
+    final rotation = value * degrees - degrees / 2;
     final transformation = rotateOverOrigin(
       matrix: Matrix4.translationValues(
         center.dx - size.width / 2 + offset.dx,
@@ -324,4 +346,6 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     properties.add(DiagnosticsProperty<bool>('debug', debug));
     properties.add(DoubleProperty('radius', radius));
   }
+
+  double _normalize(double value) => (value - axis.min) / (axis.max - axis.min);
 }
