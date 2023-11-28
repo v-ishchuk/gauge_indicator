@@ -100,9 +100,9 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
   @override
   bool get sizedByParent => false;
 
-  double get _valueProgress => (value - axis.min) / (axis.max - axis.min);
+  double get _valueProgress => _normalize(value);
 
-  double get _from => (axis.zero - axis.min) / (axis.max - axis.min);
+  double get _from => _normalize(axis.zero);
 
   @override
   void performLayout() {
@@ -253,16 +253,24 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
 
     canvas.restore();
 
-    /// Draw a pointer
+    /// Draw pointers
 
-    final pointer = axis.pointer;
-    if (pointer != null) {
-      drawPointer(canvas, axisDefinition, pointer);
+    final currentValuePointer = axis.currentValuePointer;
+    if (currentValuePointer != null) {
+      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
+    }
+
+    final pointers = axis.pointers;
+    if (pointers != null && pointers.isNotEmpty) {
+      for (final pointer in pointers) {
+        drawPointer(canvas, _normalize(pointer.value), axisDefinition, pointer);
+      }
     }
   }
 
   void drawPointer(
     Canvas canvas,
+    double value,
     RadialGaugeAxisDefinition axisDefinition,
     GaugePointer pointer,
   ) {
@@ -286,7 +294,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       originDY,
     );
 
-    final rotation = _valueProgress * degrees - degrees / 2;
+    final rotation = value * degrees - degrees / 2;
     final transformation = rotateOverOrigin(
       matrix: Matrix4.translationValues(
         center.dx - size.width / 2 + offset.dx,
@@ -335,4 +343,6 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     properties.add(DiagnosticsProperty<bool>('debug', debug));
     properties.add(DoubleProperty('radius', radius));
   }
+
+  double _normalize(double value) => (value - axis.min) / (axis.max - axis.min);
 }
