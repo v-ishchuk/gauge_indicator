@@ -116,11 +116,6 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       preferredRadius: radius,
     );
 
-    print('_computedLayout circleRect ${_computedLayout.circleRect.height}');
-    print('_computedLayout sourceRect ${_computedLayout.sourceRect.height}');
-    print('_computedLayout targetRect ${_computedLayout.targetRect.height}');
-    print('_computedLayout radius ${_computedLayout.radius}');
-
     size = _computedLayout.sourceRect.size;
 
     _axisDefinition =
