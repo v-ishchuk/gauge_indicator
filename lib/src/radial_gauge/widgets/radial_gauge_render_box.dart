@@ -1,8 +1,9 @@
+import 'dart:math' as math;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
-import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import '../internal/radial_gauge_axis_definition.dart';
 import '../internal/radial_gauge_size_ratios.dart';
@@ -114,6 +115,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       alignment: alignment,
       preferredRadius: radius,
     );
+
     size = _computedLayout.sourceRect.size;
 
     _axisDefinition =
@@ -133,11 +135,15 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
         parentUsesSize: true,
       );
 
+      final dxOffset = circleRect.left - _computedLayout.sourceRect.left;
+      final dyOffset = circleRect.top - _computedLayout.sourceRect.top;
+
       final childParentData = child.parentData! as BoxParentData;
-      childParentData.offset = Offset(
-        circleRect.left - _computedLayout.sourceRect.left,
-        circleRect.top - _computedLayout.sourceRect.top,
-      );
+      childParentData.offset = Offset(dxOffset, dyOffset);
+
+      if (size.height < child.size.height + dyOffset) {
+        size = Size(size.width, child.size.height + dyOffset);
+      }
     }
   }
 
@@ -257,17 +263,16 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     canvas.restore();
 
     /// Draw pointers
-
-    final currentValuePointer = axis.currentValuePointer;
-    if (currentValuePointer != null) {
-      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
-    }
-
     final pointers = axis.pointers;
     if (pointers != null && pointers.isNotEmpty) {
       for (final pointer in pointers) {
         drawPointer(canvas, _normalize(pointer.value), axisDefinition, pointer);
       }
+    }
+
+    final currentValuePointer = axis.currentValuePointer;
+    if (currentValuePointer != null) {
+      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
     }
   }
 
