@@ -13,9 +13,9 @@ class TrapezePointer extends Equatable implements GaugePointer {
   @override
   Path get path => roundedPoly([
         // bottom left
-        VertexDefinition(width / 4, height, radius: width / 2),
+        VertexDefinition(width / 6, height, radius: width / 2),
         // bottom right
-        VertexDefinition(width * 3 / 4, height, radius: width / 2),
+        VertexDefinition(width * 5 / 6, height, radius: width / 2),
         // top left
         VertexDefinition(width, 0, radius: width),
         // top right
