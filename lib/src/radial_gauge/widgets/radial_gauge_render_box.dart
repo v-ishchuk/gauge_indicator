@@ -268,17 +268,16 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     canvas.restore();
 
     /// Draw pointers
-
-    final currentValuePointer = axis.currentValuePointer;
-    if (currentValuePointer != null) {
-      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
-    }
-
     final pointers = axis.pointers;
     if (pointers != null && pointers.isNotEmpty) {
       for (final pointer in pointers) {
         drawPointer(canvas, _normalize(pointer.value), axisDefinition, pointer);
       }
+    }
+
+    final currentValuePointer = axis.currentValuePointer;
+    if (currentValuePointer != null) {
+      drawPointer(canvas, _valueProgress, axisDefinition, currentValuePointer);
     }
   }
 
