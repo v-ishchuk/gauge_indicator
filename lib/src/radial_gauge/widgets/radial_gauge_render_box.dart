@@ -131,15 +131,14 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       );
 
       child.layout(
-        BoxConstraints.tightFor(width: circleRect.width),
+        BoxConstraints.tightFor(width: _computedLayout.targetRect.width),
         parentUsesSize: true,
       );
 
-      final dxOffset = circleRect.left - _computedLayout.sourceRect.left;
       final dyOffset = circleRect.top - _computedLayout.sourceRect.top;
 
       final childParentData = child.parentData! as BoxParentData;
-      childParentData.offset = Offset(dxOffset, dyOffset);
+      childParentData.offset = Offset(0, dyOffset);
 
       if (size.height < child.size.height + dyOffset) {
         size = Size(size.width, child.size.height + dyOffset);
