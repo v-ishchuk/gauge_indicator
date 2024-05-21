@@ -135,6 +135,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     _axisDefinition =
         RadialGaugeAxisDefinition.calculate(_computedLayout, axis);
 
+    final child = this.child;
     if (child != null) {
       final innerCircleRadius =
           (_computedLayout.axisRadius - axis.style.thickness) / 2 * math.sqrt2;
@@ -142,15 +143,34 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
         center: _computedLayout.circleRect.center,
         radius: innerCircleRadius,
       );
-      final childRect = circleRect.intersect(_computedLayout.targetRect);
 
-      child!.layout(BoxConstraints.tight(childRect.size));
-
-      final childParentData = child!.parentData! as BoxParentData;
-      childParentData.offset = Offset(
-        childRect.left - _computedLayout.sourceRect.left,
-        childRect.top - _computedLayout.sourceRect.top,
+      child.layout(
+        BoxConstraints.tightFor(width: _computedLayout.sourceRect.width),
+        parentUsesSize: true,
       );
+
+      final dyOffset = circleRect.top - _computedLayout.sourceRect.top;
+      const dxOffset = 0.0;
+
+      if (child.size.height < circleRect.height) {
+        final childRect = circleRect.intersect(_computedLayout.targetRect);
+        child.layout(
+          BoxConstraints.tight(
+            Size(
+              _computedLayout.sourceRect.width,
+              childRect.height,
+            ),
+          ),
+          parentUsesSize: true,
+        );
+      }
+
+      final childParentData = child.parentData! as BoxParentData;
+      childParentData.offset = Offset(dxOffset, dyOffset);
+
+      if (size.height < child.size.height + dyOffset) {
+        size = Size(size.width, child.size.height + dyOffset);
+      }
     }
   }
 
