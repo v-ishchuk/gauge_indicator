@@ -5,6 +5,7 @@ import 'needle_pointer.dart';
 import 'circle_pointer.dart';
 import 'trapeze_pointer.dart';
 import 'triangle_pointer.dart';
+import 'rounded_rectangle_pointer.dart';
 
 /// Describes the position (anchor) of the gauge pointer.
 ///
@@ -76,13 +77,16 @@ class GaugePointerBorder extends Equatable {
 @immutable
 abstract class GaugePointer {
   Path get path;
+
   Size get size;
+
   GaugePointerPosition get position;
 
   double get value;
 
   /// Either color or gradient must be provided.
   Color? get color;
+
   Gradient? get gradient;
 
   /// When null, the pointer shadow will not be rendered.
@@ -140,4 +144,17 @@ abstract class GaugePointer {
     Gradient? gradient,
     Shadow? shadow,
   }) = TrapezePointer;
+
+  /// Draws a round rectangle pointer.
+  const factory GaugePointer.rectangle({
+    required double width,
+    required double height,
+    double pointerValue,
+    Color? color,
+    GaugePointerPosition position,
+    GaugePointerBorder? border,
+    double borderRadius,
+    Gradient? gradient,
+    Shadow? shadow,
+  }) = RoundedRectanglePointer;
 }

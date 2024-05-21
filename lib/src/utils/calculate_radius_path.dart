@@ -1,8 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
+import 'package:gauge_indicator/src/utils/arc_tween.dart';
 
 /// If a canvas is specified during debugging,
 /// the vertices of the arc will be drawn
@@ -24,11 +23,7 @@ Path calculateRadiusArcPath(
   final useDegrees = (degrees * part).clamp(10.0, 359.99);
 
   /// We are shifting arc angles to center it horizontally.
-  final angleShift = (degrees - 180) / 2;
-  final gaugeDegreesTween = Tween<double>(
-    begin: -180.0 - angleShift,
-    end: 0.0 + angleShift,
-  );
+  final gaugeDegreesTween = arcTween(degrees);
 
   final circleCenter = rect.center;
 

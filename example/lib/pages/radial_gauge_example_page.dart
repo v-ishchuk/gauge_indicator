@@ -30,14 +30,16 @@ class _RadialGaugeExamplePageState extends State<RadialGaugeExamplePage> {
             animation: _controller,
             builder: (context, _) => Container(
               decoration: BoxDecoration(
+                color: Colors.blueAccent,
                 border: Border.all(
-                  color: const Color(0xFFEFEFEF),
+                  color: Colors.blueGrey,
                 ),
               ),
               width: _controller.parentWidth,
               height: _controller.parentHeight,
               child: AnimatedRadialGauge(
-                radius: _controller.gaugeRadius,
+                axisRadius: _controller.gaugeRadius,
+                progressRadius: _controller.progressRadius,
                 builder: _controller.hasPointer &&
                         _controller.pointerType == PointerType.needle
                     ? null
@@ -68,7 +70,7 @@ class _RadialGaugeExamplePageState extends State<RadialGaugeExamplePage> {
                   ),
                   style: GaugeAxisStyle(
                     thickness: _controller.thickness,
-                    background: _controller.backgroundColor,
+                    background: Colors.red,
                     segmentSpacing: _controller.spacing,
                     blendColors: false,
                     cornerRadius: Radius.circular(_controller.segmentsRadius),

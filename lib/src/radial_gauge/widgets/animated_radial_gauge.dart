@@ -16,7 +16,8 @@ class AnimatedRadialGauge extends ImplicitlyAnimatedWidget {
   final GaugeAxis axis;
   final Alignment alignment;
   final bool debug;
-  final double? radius;
+  final double? axisRadius;
+  final double? progressRadius;
   final Widget? child;
   final GaugeLabelBuilder? builder;
 
@@ -29,7 +30,8 @@ class AnimatedRadialGauge extends ImplicitlyAnimatedWidget {
     this.axis = const GaugeAxis(),
     Curve curve = Curves.linear,
     this.alignment = Alignment.center,
-    this.radius,
+    this.axisRadius,
+    this.progressRadius,
     this.debug = false,
     this.child,
     VoidCallback? onEnd,
@@ -50,7 +52,8 @@ class _AnimatedRadialGaugeState
   bool _isInitialAnimation = true;
 
   Tween<double>? _valueTween;
-  Tween<double?>? _radiusTween;
+  Tween<double?>? _axisRadiusTween;
+  Tween<double?>? _progressRadiusTween;
   GaugeAxisTween? _axisTween;
 
   @override
@@ -82,17 +85,29 @@ class _AnimatedRadialGaugeState
       ),
     ) as Tween<double>;
 
-    _radiusTween = widget.radius == null
+    _axisRadiusTween = widget.axisRadius == null
         // If the radius is not specified, its animation is disabled.
         ? NullTween()
         : visitor(
-            _radiusTween,
-            widget.radius,
+            _axisRadiusTween,
+            widget.axisRadius,
             (dynamic value) => Tween<double?>(
               begin: value,
               end: value,
             ),
           ) as Tween<double?>;
+
+    _progressRadiusTween = widget.progressRadius == null
+    // If the radius is not specified, its animation is disabled.
+        ? NullTween()
+        : visitor(
+      _progressRadiusTween,
+      widget.progressRadius,
+          (dynamic value) => Tween<double?>(
+        begin: value,
+        end: value,
+      ),
+    ) as Tween<double?>;
   }
 
   @override
@@ -105,7 +120,8 @@ class _AnimatedRadialGaugeState
                 widget.axis.max,
               );
 
-          final radius = _radiusTween!.evaluate(animation);
+          final axisRadius = _axisRadiusTween!.evaluate(animation);
+          final progressRadius = _progressRadiusTween!.evaluate(animation);
           final computedAxis = _axisTween!.evaluate(animation)!.flatten();
 
           final axis = computedAxis.transform(
@@ -118,7 +134,8 @@ class _AnimatedRadialGaugeState
           return RadialGauge(
             debug: widget.debug,
             value: value,
-            radius: radius,
+            axisRadius: axisRadius,
+            progressRadius: progressRadius,
             alignment: widget.alignment,
             axis: axis,
             child: widget.builder?.call(context, widget.child, value),

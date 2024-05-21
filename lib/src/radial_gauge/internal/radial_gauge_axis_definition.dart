@@ -90,7 +90,7 @@ class RadialGaugeAxisDefinition {
       );
     }
 
-    final clampedRadius = layout.radius;
+    final clampedRadius = layout.axisRadius;
     final degrees = axis.degrees.clamp(10.0, 360.0);
 
     /// We are shifting arc angles to center it horizontally.

@@ -6,7 +6,8 @@ import 'package:gauge_indicator/gauge_indicator.dart';
 /// Renders a radial gauge.
 class RadialGauge extends SingleChildRenderObjectWidget {
   final double value;
-  final double? radius;
+  final double? axisRadius;
+  final double? progressRadius;
 
   /// For now we are only supporting single axis.
   final GaugeAxis axis;
@@ -16,7 +17,8 @@ class RadialGauge extends SingleChildRenderObjectWidget {
   const RadialGauge({
     required this.value,
     required this.axis,
-    this.radius,
+    this.axisRadius,
+    this.progressRadius,
     this.alignment = Alignment.center,
     this.debug = false,
     Widget? child,
@@ -29,7 +31,8 @@ class RadialGauge extends SingleChildRenderObjectWidget {
       alignment: alignment,
       axis: axis,
       value: value,
-      radius: radius,
+      axisRadius: axisRadius,
+      progressRadius: progressRadius,
       debug: debug,
     );
   }
@@ -43,7 +46,8 @@ class RadialGauge extends SingleChildRenderObjectWidget {
       ..alignment = alignment
       ..axis = axis
       ..value = value
-      ..radius = radius
+      ..axisRadius = axisRadius
+      ..progressRadius = progressRadius
       ..debug = debug;
   }
 
@@ -51,7 +55,8 @@ class RadialGauge extends SingleChildRenderObjectWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DoubleProperty('value', value));
-    properties.add(DoubleProperty('radius', radius));
+    properties.add(DoubleProperty('axisRadius', axisRadius));
+    properties.add(DoubleProperty('progressRadius', progressRadius));
     properties.add(DiagnosticsProperty<GaugeAxis>('axis', axis));
     properties.add(DiagnosticsProperty<Alignment>('alignment', alignment));
     properties.add(DiagnosticsProperty<bool>('debug', debug));

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/widgets.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
 
@@ -21,20 +23,24 @@ extension on BoxConstraints {
 }
 
 /// Defines the radial gauge layout.
-/// The layout is defined by the three rects and the radius.
+/// The layout is defined by the three rects and the two radii.
 class RadialGaugeLayout {
   final Rect circleRect;
   final Rect targetRect;
   final Rect sourceRect;
 
-  /// The circle radius
-  final double radius;
+  /// The axis circle radius
+  final double axisRadius;
+
+  /// The progress circle radius
+  final double progressRadius;
 
   RadialGaugeLayout({
     required this.circleRect,
     required this.targetRect,
     required this.sourceRect,
-    required this.radius,
+    required this.axisRadius,
+    required this.progressRadius,
   });
 
   /// Calculate the layout based on the [size], [ratios] and
@@ -42,12 +48,13 @@ class RadialGaugeLayout {
   factory RadialGaugeLayout.calculate(
     BoxConstraints constraints,
     RadialGaugeSizeRatios ratios, {
-    double? preferredRadius,
+    double? preferredAxisRadius,
+    double? preferredProgressRadius,
     Alignment alignment = Alignment.center,
   }) {
     Size? preferredSize;
-    if (preferredRadius != null) {
-      preferredSize = ratios.getSize(preferredRadius);
+    if (preferredAxisRadius != null) {
+      preferredSize = ratios.getSize(preferredAxisRadius);
       // Gauge can be fitted in the provided constraints
       final canFitGaugeInTheConstraints = constraints.canFitIn(preferredSize);
       // If the gauge fits within the constraints, align it in this space
@@ -68,15 +75,20 @@ class RadialGaugeLayout {
 
         /// Gauge circle rect
         final circleRect = Rect.fromCircle(
-          center: targetRect.topCenter + Offset(0.0, preferredRadius),
-          radius: preferredRadius,
+          center: targetRect.topCenter + Offset(0.0, preferredAxisRadius),
+          radius: preferredAxisRadius,
         );
+
+        final progressRadius = min(
+            preferredProgressRadius ?? preferredAxisRadius,
+            preferredAxisRadius);
 
         return RadialGaugeLayout(
           circleRect: circleRect,
           targetRect: targetRect,
           sourceRect: sourceRect,
-          radius: preferredRadius,
+          axisRadius: preferredAxisRadius,
+          progressRadius: progressRadius,
         );
       }
     }
@@ -109,8 +121,8 @@ class RadialGaugeLayout {
     }
 
     final Size targetSize;
-    if (preferredRadius != null) {
-      final preferredSize2 = ratios.getSize(preferredRadius);
+    if (preferredAxisRadius != null) {
+      final preferredSize2 = ratios.getSize(preferredAxisRadius);
       final preferredRect = Offset.zero & preferredSize2;
 
       targetSize = sourceRect.includes(preferredRect)
@@ -132,11 +144,15 @@ class RadialGaugeLayout {
       radius: clampedRadius,
     );
 
+    final progressRadius =
+        min(preferredProgressRadius ?? clampedRadius, clampedRadius);
+
     return RadialGaugeLayout(
       circleRect: circleRect,
       targetRect: targetRect,
       sourceRect: sourceRect,
-      radius: clampedRadius,
+      axisRadius: clampedRadius,
+      progressRadius: progressRadius,
     );
   }
 
@@ -146,6 +162,7 @@ class RadialGaugeLayout {
         circleRect: circleRect.shift(offset),
         targetRect: targetRect.shift(offset),
         sourceRect: sourceRect.shift(offset),
-        radius: radius,
+        axisRadius: axisRadius,
+        progressRadius: progressRadius,
       );
 }
