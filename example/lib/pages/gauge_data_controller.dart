@@ -41,6 +41,7 @@ class GaugeDataController extends ChangeNotifier {
 
   double _degree = 260;
   double get degree => _degree;
+
   set degree(double value) {
     if (degree != value) {
       _degree = value;
@@ -49,6 +50,7 @@ class GaugeDataController extends ChangeNotifier {
   }
 
   bool _hasPointer = true;
+
   bool get hasPointer => _hasPointer;
   set hasPointer(bool value) {
     if (value != hasPointer) {
@@ -58,7 +60,9 @@ class GaugeDataController extends ChangeNotifier {
   }
 
   bool _hasProgressBar = true;
+
   bool get hasProgressBar => _hasProgressBar;
+
   set hasProgressBar(bool value) {
     if (value != hasProgressBar) {
       _hasProgressBar = value;
@@ -94,7 +98,9 @@ class GaugeDataController extends ChangeNotifier {
   }
 
   Color _pointerColor = const Color(0xFF002E5F);
+
   Color get pointerColor => _pointerColor;
+
   set pointerColor(Color value) {
     if (value != pointerColor) {
       _pointerColor = value;
@@ -122,6 +128,8 @@ class GaugeDataController extends ChangeNotifier {
 
   double _gaugeRadius = 150;
   double get gaugeRadius => _gaugeRadius;
+  double get progressRadius => gaugeRadius - 20;
+
   set gaugeRadius(double value) {
     if (value != gaugeRadius) {
       _gaugeRadius = value;
@@ -206,11 +214,11 @@ class GaugeDataController extends ChangeNotifier {
       case PointerType.triangle:
         return GaugePointer.triangle(
           width: pointerSize,
-          height: pointerSize,
+          height: progressRadius,
           borderRadius: pointerSize * 0.125,
           color: pointerColor,
           position: GaugePointerPosition.surface(
-            offset: Offset(0, thickness * 0.6),
+            offset: Offset(0, thickness),
           ),
           border: GaugePointerBorder(
             color: Colors.white,
@@ -219,11 +227,10 @@ class GaugeDataController extends ChangeNotifier {
         );
       case PointerType.circle:
         return GaugePointer.circle(
-          radius: pointerSize * 0.5,
+          radius: pointerSize / 2,
           color: pointerColor,
-          border: GaugePointerBorder(
-            color: Colors.white,
-            width: pointerSize * 0.125,
+          position:  GaugePointerPosition.center(
+            offset: Offset(0, progressRadius + pointerSize),
           ),
         );
     }

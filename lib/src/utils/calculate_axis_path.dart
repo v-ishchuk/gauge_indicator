@@ -1,25 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
+import 'package:gauge_indicator/src/utils/arc_tween.dart';
 
 Path calculateAxisPath(
   Rect rect, {
+  double? radius,
   double from = 0.0,
   double to = 1.0,
   double degrees = 180.0,
   double thickness = 10.0,
 }) {
-  final radius = rect.longestSide / 2;
+  final arcRadius = radius ?? rect.longestSide / 2;
 
   degrees = (degrees).clamp(10.0, 359.99);
   final part = to - from;
   final useDegrees = (degrees * part).clamp(10.0, 359.99);
 
   /// We are shifting arc angles to center it horizontally.
-  final angleShift = (degrees - 180) / 2;
-  final gaugeDegreesTween = Tween<double>(
-    begin: -180.0 - angleShift,
-    end: 0.0 + angleShift,
-  );
+  final gaugeDegreesTween = arcTween(degrees);
 
   final circleCenter = rect.center;
 
@@ -27,8 +25,8 @@ Path calculateAxisPath(
   final startAngle = gaugeDegreesTween.transform(from);
   final endAngle = gaugeDegreesTween.transform(to);
 
-  final innerRadius = radius - thickness;
-  final outerRadius = radius;
+  final innerRadius = arcRadius - thickness;
+  final outerRadius = arcRadius;
 
   const largeArcMinAngle = 180.0;
 

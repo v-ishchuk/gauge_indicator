@@ -31,6 +31,7 @@ class GaugeBasicProgressBar extends Equatable implements GaugeProgressBar {
   ) {
     final progressBar = calculateAxisPath(
       layout.circleRect,
+      radius: layout.progressRadius,
       from: from,
       to: progress,
       degrees: axis.degrees,

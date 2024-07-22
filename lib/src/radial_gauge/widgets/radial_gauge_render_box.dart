@@ -58,13 +58,24 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     }
   }
 
-  double? _radius;
+  double? _axisRadius;
 
-  double? get radius => _radius;
+  double? get axisRadius => _axisRadius;
 
-  set radius(double? radius) {
-    if (_radius != radius) {
-      _radius = radius;
+  set axisRadius(double? axisRadius) {
+    if (_axisRadius != axisRadius) {
+      _axisRadius = axisRadius;
+      markNeedsLayout();
+    }
+  }
+
+  double? _progressRadius;
+
+  double? get progressRadius => _progressRadius;
+
+  set progressRadius(double? progressRadius) {
+    if (_progressRadius != progressRadius) {
+      _progressRadius = progressRadius;
       markNeedsLayout();
     }
   }
@@ -89,12 +100,14 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     required final GaugeAxis axis,
     required final Alignment alignment,
     required final bool debug,
-    required final double? radius,
+    required final double? axisRadius,
+    required final double? progressRadius,
     RenderBox? child,
   })  : _value = value,
         _axis = axis,
         _alignment = alignment,
-        _radius = radius,
+        _axisRadius = axisRadius,
+        _progressRadius = progressRadius,
         _debug = debug,
         super(child);
 
@@ -113,7 +126,8 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       constraints,
       ratios,
       alignment: alignment,
-      preferredRadius: radius,
+      preferredAxisRadius: axisRadius,
+      preferredProgressRadius: progressRadius,
     );
 
     size = _computedLayout.sourceRect.size;
@@ -124,7 +138,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     final child = this.child;
     if (child != null) {
       final innerCircleRadius =
-          (_computedLayout.radius - axis.style.thickness) / 2 * math.sqrt2;
+          (_computedLayout.axisRadius - axis.style.thickness) / 2 * math.sqrt2;
       final circleRect = Rect.fromCircle(
         center: _computedLayout.circleRect.center,
         radius: innerCircleRadius,
@@ -303,7 +317,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     final double originDY;
     switch (pointer.position.anchor) {
       case GaugePointerAnchor.center:
-        originDY = size.height - offset.dy;
+        originDY = (size.height - offset.dy).abs();
         break;
       case GaugePointerAnchor.surface:
         originDY = axisDefinition.radius + size.height / 2 - offset.dy;
@@ -315,7 +329,7 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
       originDY,
     );
 
-    final rotation = value * degrees - degrees / 2;
+    final rotation = value * degrees - (degrees == 360.0 ? 0 : degrees / 2);
     final transformation = rotateOverOrigin(
       matrix: Matrix4.translationValues(
         center.dx - size.width / 2 + offset.dx,
@@ -362,7 +376,8 @@ class RadialGaugeRenderBox extends RenderShiftedBox {
     properties.add(DoubleProperty('value', value));
     properties.add(DiagnosticsProperty<GaugeAxis>('axis', axis));
     properties.add(DiagnosticsProperty<bool>('debug', debug));
-    properties.add(DoubleProperty('radius', radius));
+    properties.add(DoubleProperty('axisRadius', axisRadius));
+    properties.add(DoubleProperty('progressRadius', progressRadius));
   }
 
   double _normalize(double value) => (value - axis.min) / (axis.max - axis.min);
