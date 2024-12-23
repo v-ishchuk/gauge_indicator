@@ -116,6 +116,7 @@ class RadialGaugeAxisDefinition {
         axis,
         gaugeDegreesTween,
         centerRadius,
+        layout.progressRadius,
       ).toList(),
     );
   }
@@ -125,6 +126,7 @@ class RadialGaugeAxisDefinition {
     GaugeAxis axis,
     Tween<double> gaugeDegreesTween,
     double radius,
+    double? progressRadius,
   ) sync* {
     const pi2 = math.pi * 2;
     final spacingAngle = getArcAngle(axis.style.segmentSpacing, radius);
@@ -169,6 +171,8 @@ class RadialGaugeAxisDefinition {
         from: math.min(clampedFrom, clampedTo),
         to: math.max(clampedFrom, clampedTo),
         thickness: thickness,
+        progressRadius: progressRadius,
+        fillSector: segment.fillSector,
       );
 
       yield GaugeSegmentDefinition(
