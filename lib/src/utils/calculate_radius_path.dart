@@ -13,10 +13,12 @@ Path calculateRadiusArcPath(
   double degrees = 180.0,
   double thickness = 10.0,
   Canvas? canvas,
+  double? progressRadius,
+  bool fillSector = false,
 }) {
   assert(from <= to, 'Cannot draw inverted arc.');
 
-  final radius = rect.longestSide / 2;
+  final radius = progressRadius ?? rect.longestSide / 2;
 
   degrees = (degrees).clamp(10.0, 359.99);
   final part = to - from;
@@ -36,7 +38,7 @@ Path calculateRadiusArcPath(
   final outerRadius = radius;
   final centerOuterRadius = outerRadius - cornerRadius.y;
   final centerRadius = radius - halfThickness;
-  final innerRadius = radius - thickness;
+  final innerRadius = fillSector ? 0.0 : radius - thickness;
   final centerInnerRadius = innerRadius + cornerRadius.y;
 
   final centerAxisStartAngle = toRadians(startAngle);

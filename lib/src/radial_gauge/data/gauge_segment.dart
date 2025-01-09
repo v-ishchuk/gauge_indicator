@@ -11,6 +11,7 @@ class GaugeSegment extends Equatable {
   final GaugeBorder? border;
   final Shader? shader;
   final Radius cornerRadius;
+  final bool fillSector;
 
   const GaugeSegment({
     required this.from,
@@ -20,6 +21,7 @@ class GaugeSegment extends Equatable {
     this.border,
     this.shader,
     this.cornerRadius = Radius.zero,
+    this.fillSector = false,
   });
 
   GaugeSegment copyWith({
@@ -30,6 +32,7 @@ class GaugeSegment extends Equatable {
     Shader? shader,
     GaugeBorder? border,
     Radius? cornerRadius,
+    bool? fillSector,
   }) =>
       GaugeSegment(
         from: from ?? this.from,
@@ -39,6 +42,7 @@ class GaugeSegment extends Equatable {
         shader: shader ?? this.shader,
         border: border ?? this.border,
         cornerRadius: cornerRadius ?? this.cornerRadius,
+        fillSector: fillSector ?? this.fillSector,
       );
 
   static GaugeSegment lerp(GaugeSegment begin, GaugeSegment end, double t) =>
@@ -50,9 +54,10 @@ class GaugeSegment extends Equatable {
         shader: end.shader,
         border: GaugeBorder.lerp(begin.border, end.border, t),
         cornerRadius: Radius.lerp(begin.cornerRadius, end.cornerRadius, t)!,
+        fillSector: end.fillSector,
       );
 
   @override
   List<Object?> get props =>
-      [from, to, color, gradient, shader, cornerRadius, border];
+      [from, to, color, gradient, shader, cornerRadius, border, fillSector];
 }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gauge_indicator/gauge_indicator.dart';
@@ -54,6 +55,7 @@ class _AnimatedRadialGaugeState
   Tween<double>? _valueTween;
   Tween<double?>? _axisRadiusTween;
   Tween<double?>? _progressRadiusTween;
+  List<Tween<double>> _segmentTweens = [];
   GaugeAxisTween? _axisTween;
 
   @override
@@ -98,16 +100,30 @@ class _AnimatedRadialGaugeState
           ) as Tween<double?>;
 
     _progressRadiusTween = widget.progressRadius == null
-    // If the radius is not specified, its animation is disabled.
+        // If the radius is not specified, its animation is disabled.
         ? NullTween()
         : visitor(
-      _progressRadiusTween,
-      widget.progressRadius,
-          (dynamic value) => Tween<double?>(
-        begin: value,
-        end: value,
-      ),
-    ) as Tween<double?>;
+            _progressRadiusTween,
+            widget.progressRadius,
+            (dynamic value) => Tween<double?>(
+              begin: value,
+              end: value,
+            ),
+          ) as Tween<double?>;
+
+    final filledSectors = widget.axis.segments.where((e) => e.fillSector);
+    _segmentTweens = filledSectors.isEmpty
+        ? []
+        : filledSectors.mapIndexed((i, e) {
+            return visitor(
+              _safeGet(_segmentTweens, i),
+              e.to,
+              (dynamic value) => Tween<double>(
+                begin: e.from,
+                end: e.to,
+              ),
+            ) as Tween<double>;
+          }).toList();
   }
 
   @override
@@ -124,12 +140,22 @@ class _AnimatedRadialGaugeState
           final progressRadius = _progressRadiusTween!.evaluate(animation);
           final computedAxis = _axisTween!.evaluate(animation)!.flatten();
 
-          final axis = computedAxis.transform(
+          final filledSectors = widget.axis.segments.where((e) => e.fillSector);
+          final otherSegments =
+              widget.axis.segments.where((e) => !e.fillSector);
+          final animatedFilledSectors = filledSectors.mapIndexed((i, e) {
+            return e.copyWith(
+                to: _safeGet(_segmentTweens, i)?.evaluate(animation));
+          }).toList();
+
+          final axis = computedAxis
+              .transform(
             range: GaugeRange(widget.axis.min, widget.axis.max),
             progress: controller.value,
             value: value,
             isInitial: _isInitialAnimation,
-          );
+          )
+              .copyWith(segments: [...animatedFilledSectors, ...otherSegments]);
 
           return RadialGauge(
             debug: widget.debug,
@@ -143,5 +169,12 @@ class _AnimatedRadialGaugeState
         },
       ),
     );
+  }
+
+  T? _safeGet<T>(List<T> list, int index) {
+    if (index >= 0 && index < list.length) {
+      return list[index];
+    }
+    return null;
   }
 }
