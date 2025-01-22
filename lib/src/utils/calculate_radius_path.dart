@@ -18,7 +18,9 @@ Path calculateRadiusArcPath(
 }) {
   assert(from <= to, 'Cannot draw inverted arc.');
 
-  final radius = progressRadius ?? rect.longestSide / 2;
+  final radius = progressRadius != null && fillSector
+      ? progressRadius
+      : rect.longestSide / 2;
 
   degrees = (degrees).clamp(10.0, 359.99);
   final part = to - from;
